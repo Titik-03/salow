@@ -9,7 +9,7 @@ trap 'rm -rf -- "$stage"' EXIT HUP INT TERM
 cp -R "$root/mpv-config/." "$stage/"
 cp "$root/shaders/salow.hook" "$root/shaders/salow-medium.hook" "$root/shaders/tv-dynamic.glsl" "$stage/shaders/"
 # Preserve user-supplied impulse responses and remembered toggle choices on upgrades.
-if [ -d "$config/irs" ]; then cp -R "$config/irs" "$stage/irs"; fi
+if [ -d "$config/irs" ]; then cp -R "$config/irs/." "$stage/irs/"; fi
 if [ -f "$config/salow-state.json" ]; then cp "$config/salow-state.json" "$stage/"; fi
 backup=
 if [ -e "$config" ] || [ -L "$config" ]; then

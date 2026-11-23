@@ -30,13 +30,13 @@ glsl-shaders="~~/shaders/salow.hook:~~/shaders/tv-dynamic.glsl"
 
 Use `salow-medium.hook` for Medium, or remove the TV Dynamic path for the natural look. The installer respects `XDG_CONFIG_HOME` and refuses to overwrite existing shader files.
 
-**My full mpv setup — shaders, controls, uosc and optional pan smoothing:**
+**My full mpv setup — shaders, audio effects, controls, uosc and optional pan smoothing:**
 
 ```sh
 git clone https://github.com/Titik-03/salow.git && cd salow && ./install-config.sh
 ```
 
-If already cloned, run the chosen installer from that folder. The full installer automatically moves your old configuration into a dated backup beside the mpv folder, then installs the new setup. It preserves supplied audio impulse responses and saved toggle choices. Graphics, hardware decoding and audio output are selected automatically. The motion settings target a 60 Hz display. [Controls, dependencies and audio setup](mpv-config/README.md).
+If already cloned, run the chosen installer from that folder. The full installer automatically moves your old configuration into a dated backup beside the mpv folder, then installs the new setup. It includes X-Fi and Atmos audio responses, preserving existing custom responses and saved toggle choices. Graphics, hardware decoding and audio output are selected automatically. The motion settings target a 60 Hz display. [Controls, dependencies and audio setup](mpv-config/README.md).
 
 Prefer manual installation? Download the shader files from [Releases](https://github.com/Titik-03/salow/releases), place them in your mpv `shaders/` folder and use the settings above.
 

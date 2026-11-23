@@ -26,6 +26,9 @@ with tempfile.TemporaryDirectory() as scratch:
         assert (config / 'mpv.conf').is_file()
         assert (config / 'shaders/salow.hook').is_file()
         assert not (config / 'mpv-config').exists()
+        for name in ('xfi-crystalizer.wav', 'dolby-atmos.wav'):
+            assert (config / 'irs' / name).read_bytes() == (installer.parent / 'mpv-config/irs' / name).read_bytes()
+        assert not (config / 'irs/razor-surround.wav').exists()
         backups = list(base.glob('mpv.backup-*/mpv'))
         assert len(backups) == (0 if case == 'missing' else 1)
         if case in ('settings', 'hidden'):
@@ -43,5 +46,7 @@ with tempfile.TemporaryDirectory() as scratch:
     result = subprocess.run(['sh', str(installer)], env={**os.environ, 'XDG_CONFIG_HOME': str(base)}, capture_output=True, text=True)
     assert result.returncode == 0, result.stderr
     assert (config / 'irs/xfi-crystalizer.wav').read_bytes() == b'user supplied response'
+    assert not (config / 'irs/irs').exists()
+    assert (config / 'irs/dolby-atmos.wav').is_file()
     assert (config / 'salow-state.json').read_text() == '{"audio":"original","pan":true}'
     print('Upgrade preserves audio files and choices: passed')
