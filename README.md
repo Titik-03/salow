@@ -54,7 +54,13 @@ Both keep A+A's line weight; Medium gives up some fine-edge precision for its sp
 
 The main download is the shader itself: [Salow](shaders/salow.hook). [Salow Medium](shaders/salow-medium.hook) is a smaller alternative, and [TV Dynamic](shaders/tv-dynamic.glsl) is an optional look. Download whichever files you want from the repository or release.
 
-For Linux, run `./install.sh` from a downloaded copy of this project to install the three shader files. This does not change your existing mpv settings. You can also install them manually:
+On Linux, install Git and mpv using your distribution's package manager, then run:
+
+```sh
+git clone https://github.com/Titik-03/salow.git && cd salow && ./install.sh
+```
+
+This installs the three shader files without changing your existing mpv settings. You can also install them manually:
 
 1. Copy the files from `shaders/` into your mpv shaders folder:
    - Linux / macOS: `~/.config/mpv/shaders/`
