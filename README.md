@@ -36,7 +36,7 @@ Use `salow-medium.hook` for Medium, or remove the TV Dynamic path for the natura
 git clone https://github.com/Titik-03/salow.git && cd salow && ./install-config.sh
 ```
 
-If already cloned, run the chosen installer from that folder. Back up and rename an existing mpv configuration first: the full installer requires an absent destination. It includes preferences for Intel/VA-API, PipeWire and a 60 Hz display, so adjust them for your system. [Controls, dependencies and audio setup](mpv-config/README.md).
+If already cloned, run the chosen installer from that folder. The full installer accepts a missing or empty mpv folder; back up and rename a nonempty folder first. It includes preferences for Intel/VA-API, PipeWire and a 60 Hz display, so adjust them for your system. [Controls, dependencies and audio setup](mpv-config/README.md).
 
 Prefer manual installation? Download the shader files from [Releases](https://github.com/Titik-03/salow/releases), place them in your mpv `shaders/` folder and use the settings above.
 
