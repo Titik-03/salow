@@ -1,6 +1,6 @@
 # mpv configuration
 
-This is my personal mpv setup. See the main README for installation, dependencies and controls. It contains preferences for Intel hardware decoding, PipeWire, a 60 Hz touchscreen and Japanese audio; edit `mpv.conf` for your system. Pan smoothing needs VapourSynth, MVTools and NumPy. The audio impulse responses are supplied separately by the user.
+This is my personal mpv setup. See the main README for installation, dependencies and controls. It uses automatic graphics, hardware decoding and audio output, with preferences for a 60 Hz display and Japanese audio. Pan smoothing needs VapourSynth, MVTools and NumPy. The audio impulse responses are supplied separately by the user.
 
 ## Controls
 
@@ -21,7 +21,7 @@ Shader selection starts with Salow + TV Dynamic each launch. Ctrl+0 disables bot
 
 Supply `irs/xfi-crystalizer.wav` and `irs/dolby-atmos.wav` for the X-Fi and Atmos modes. A missing impulse response falls back to original sound. Impulse responses are not bundled because their redistribution terms are unestablished. The installer retains your supplied responses and saved choices, and backs up the entire previous configuration before replacement.
 
-Pan smoothing needs an mpv build with VapourSynth, plus MVTools and NumPy; leave it off if these are unavailable. The uosc helper binaries are omitted, so clipboard and subtitle-download features are unavailable.
+Pan smoothing needs an mpv build with VapourSynth, plus MVTools and NumPy. Alt+2 reports unavailable when mpv cannot add the filter; the remaining controls keep working. The uosc helper binaries are omitted, so clipboard and subtitle-download features are unavailable.
 
 ## Third-party components
 

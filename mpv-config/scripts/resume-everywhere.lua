@@ -4,6 +4,7 @@
 --  * continue watching: opening any episode of a show jumps to the episode you were last watching in that folder,
 --    at its saved position. Press Backspace within 15 s to go back to the episode you opened instead.
 local utils = require 'mp.utils'
+local msg = require 'mp.msg'
 local FINISHED_TAIL = 90
 local state_path = mp.command_native({'expand-path', '~~state/continue-watching.json'})
 
@@ -12,8 +13,19 @@ local function load_state()
     local t = utils.parse_json(f:read('*a') or '') or {}; f:close(); return t
 end
 local function store_state(t)
-    local f = io.open(state_path, 'w'); if not f then return end
-    f:write(utils.format_json(t)); f:close()
+    local json, err = utils.format_json(t)
+    if not json then msg.error('Could not encode resume state: ' .. tostring(err)); return end
+    local f
+    local ok
+    ok, err = pcall(function()
+        f = assert(io.open(state_path .. '.tmp', 'w'))
+        assert(f:write(json))
+        assert(f:close())
+        f = nil
+        assert(os.rename(state_path .. '.tmp', state_path))
+    end)
+    if f then pcall(function() f:close() end) end
+    if not ok then msg.error('Could not save resume state: ' .. tostring(err)) end
 end
 local function folder_of(path) return (utils.split_path(path)) end
 

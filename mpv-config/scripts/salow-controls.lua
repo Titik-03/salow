@@ -52,9 +52,27 @@ mp.register_script_message('salow-look', function()
     shaders()
     mp.osd_message(tv and 'TV Dynamic (applies when shaders are on)' or 'Natural look')
 end)
+local previous_hwdec
+local function pan(enable)
+    if enable then
+        previous_hwdec = mp.get_property('hwdec', 'auto')
+        mp.set_property('hwdec', 'no')
+        local ok, err = mp.commandv('vf', 'add', '@pansmooth:vapoursynth="~~/vs/pan-smooth.vpy":buffered-frames=8')
+        if not ok then
+            mp.set_property('hwdec', previous_hwdec)
+            msg.error('Pan smoothing unavailable: ' .. tostring(err))
+            mp.osd_message('Pan smoothing unavailable: mpv needs VapourSynth, MVTools and NumPy', 5)
+            return false
+        end
+    else
+        mp.command('vf remove @pansmooth')
+        if previous_hwdec then mp.set_property('hwdec', previous_hwdec) end
+    end
+    return true
+end
 local function motion()
     mp.set_property_native('interpolation', state.mix)
-    if state.pan then mp.command('apply-profile pan-smooth') end
+    if state.pan and not pan(true) then state.pan = false end
 end
 mp.register_script_message('salow-mix', function()
     state.mix = not state.mix
@@ -63,12 +81,8 @@ mp.register_script_message('salow-mix', function()
     mp.osd_message((state.mix and 'Frame mixing on' or 'Frame mixing off') .. (saved and '' or ' (not saved; check config permissions)'))
 end)
 mp.register_script_message('pan-smooth-toggle', function()
+    if not pan(not state.pan) then return end
     state.pan = not state.pan
-    if state.pan then mp.command('apply-profile pan-smooth')
-    else
-        mp.command('apply-profile pan-smooth restore')
-        mp.command('vf remove @pansmooth')
-    end
     local saved = save()
     mp.osd_message((state.pan and 'Pan smoothing on' or 'Pan smoothing off') .. (saved and '' or ' (not saved; check config permissions)'))
 end)
