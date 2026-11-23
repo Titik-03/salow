@@ -2,6 +2,8 @@
 local scratch = os.tmpname()
 os.remove(scratch)
 local messages, events, props, commands
+local save_errors = 0
+package.preload['mp.msg'] = function() return {error=function() save_errors=save_errors+1 end} end
 package.preload['mp.utils'] = function()
     return {
         file_info = function() return {} end,
@@ -52,5 +54,20 @@ start()
 assert(not props.interpolation)
 assert(commands[1]~='apply-profile pan-smooth')
 assert(commands[#commands]:find('dolby%-atmos'))
+-- A serialization error must not kill any registered controls.
+local utils = require 'mp.utils'
+utils.format_json = function() return nil, 'encoding failed' end
+messages['salow-mix']()
+messages['salow-audio']()
+messages['pan-smooth-toggle']()
+assert(save_errors == 3)
+messages['salow-model']('medium')
+assert(props['glsl-shaders'][1]:find('medium'))
+-- An exception from the I/O layer must also leave the script alive.
+utils.format_json = function() error('encoding exception') end
+messages['salow-mix']()
+assert(save_errors == 4)
+messages['salow-model']('off')
+assert(#props['glsl-shaders']==0)
 os.remove(scratch)
-print('Controls and persistence checks passed')
+print('Controls, persistence and save-failure checks passed')

@@ -1,5 +1,6 @@
 -- Remember motion and audio choices across launches; shader selection starts at Salow.
 local utils = require 'mp.utils'
+local msg = require 'mp.msg'
 local state_path = mp.command_native({'expand-path', '~~/salow-state.json'})
 local state = {mix = false, pan = false, audio = 'xfi'}
 local f = io.open(state_path, 'r')
@@ -13,18 +14,20 @@ if f then
     end
 end
 local function save()
-    local file, err = io.open(state_path .. '.tmp', 'w')
-    if file then
-        local ok = file:write(utils.format_json(state))
-        local closed = file:close()
-        if ok and closed then
-            local renamed
-            renamed, err = os.rename(state_path .. '.tmp', state_path)
-            if renamed then return end
-        end
-    end
-    mp.msg.error('Could not save Salow settings: ' .. tostring(err))
-    mp.osd_message('Could not save Salow settings')
+    local file
+    local ok, err = pcall(function()
+        local json, encode_error = utils.format_json(state)
+        assert(type(json) == 'string', encode_error or 'JSON encoding failed')
+        file = assert(io.open(state_path .. '.tmp', 'w'))
+        assert(file:write(json))
+        assert(file:close())
+        file = nil
+        assert(os.rename(state_path .. '.tmp', state_path))
+    end)
+    if file then pcall(function() file:close() end) end
+    if ok then return true end
+    msg.error('Could not save Salow settings: ' .. tostring(err))
+    return false
 end
 local model, tv = 'salow.hook', true
 local function shaders()
@@ -56,8 +59,8 @@ end
 mp.register_script_message('salow-mix', function()
     state.mix = not state.mix
     mp.set_property_native('interpolation', state.mix)
-    save()
-    mp.osd_message(state.mix and 'Frame mixing on' or 'Frame mixing off')
+    local saved = save()
+    mp.osd_message((state.mix and 'Frame mixing on' or 'Frame mixing off') .. (saved and '' or ' (not saved; check config permissions)'))
 end)
 mp.register_script_message('pan-smooth-toggle', function()
     state.pan = not state.pan
@@ -66,8 +69,8 @@ mp.register_script_message('pan-smooth-toggle', function()
         mp.command('apply-profile pan-smooth restore')
         mp.command('vf remove @pansmooth')
     end
-    save()
-    mp.osd_message(state.pan and 'Pan smoothing on' or 'Pan smoothing off')
+    local saved = save()
+    mp.osd_message((state.pan and 'Pan smoothing on' or 'Pan smoothing off') .. (saved and '' or ' (not saved; check config permissions)'))
 end)
 local modes = {'original', 'atmos', 'xfi'}
 local irs = {atmos = {'dolby-atmos.wav', 22}, xfi = {'xfi-crystalizer.wav', 30}}
@@ -91,7 +94,7 @@ mp.register_script_message('salow-audio', function()
     for i, name in ipairs(modes) do if name == state.audio then index = i end end
     state.audio = modes[index % #modes + 1]
     audio(true)
-    save()
+    if not save() then mp.osd_message('Audio: ' .. state.audio .. ' (not saved; check config permissions)') end
 end)
 shaders()
 motion()
