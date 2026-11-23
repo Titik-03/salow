@@ -25,6 +25,24 @@ on the same laptop, the total GPU time per frame (including mpv's own work and T
 against 23 ms with A+A, with no dropped frames. Salow Medium has not been timed in live mpv yet; its figure comes
 from the offscreen runs.
 
+## Image comparisons
+
+The same 1080p frame is shown four ways: **Original**, **Anime4K A+A**, **Salow**, and **Salow + TV Dynamic**. The detail panels use identical 1:1 crops; open the linked full frames to inspect them at native resolution.
+
+### Clannad: After Story
+
+![Clannad line-detail comparison](docs/comparisons/clannad-detail.webp)
+
+[Full-scene comparison](docs/comparisons/clannad-scene.webp) · [Original](docs/comparisons/clannad-original.webp) · [Anime4K A+A](docs/comparisons/clannad-anime4k.webp) · [Salow](docs/comparisons/clannad-salow.webp) · [Salow + TV Dynamic](docs/comparisons/clannad-salow-tv.webp)
+
+### The Apothecary Diaries
+
+![The Apothecary Diaries line-detail comparison](docs/comparisons/kusuriya-detail.webp)
+
+[Full-scene comparison](docs/comparisons/kusuriya-scene.webp) · [Original](docs/comparisons/kusuriya-original.webp) · [Anime4K A+A](docs/comparisons/kusuriya-anime4k.webp) · [Salow](docs/comparisons/kusuriya-salow.webp) · [Salow + TV Dynamic](docs/comparisons/kusuriya-salow-tv.webp)
+
+TV Dynamic is present only in the final panel, so its effect on colour and contrast is separate from line restoration. Stills cannot show motion, shimmer, or pan smoothing. These examples were rendered offscreen with FFmpeg/libplacebo; output can differ from mpv's presentation and other displays. [Render details](docs/comparisons/README.md).
+
 ## Comparisons
 
 ![Live mpv GPU time for no shader, Salow with TV Dynamic, and Anime4K A+A with TV Dynamic](docs/gpu-comparison.svg)
@@ -51,7 +69,7 @@ A separate offscreen test measured line shimmer and thin-line depth in five held
 | Dark clip: edge shimmer (code values; lower is less) | 0.603 | 0.607 | 0.463 |
 | Dark clip: thin-line depth (code values; higher is darker) | 10.58 | 7.31 | 9.83 |
 
-These differences were measured on selected areas and clips. The shimmer changes are small, and visibility was not established. The underlying captures and runner were removed during project cleanup, so these figures are retained from the original test notes; no before-and-after images are presented here. See [comparison notes](docs/comparison-notes.md).
+These differences were measured on selected areas and clips. The shimmer changes are small, and visibility was not established. The underlying captures and runner were removed during project cleanup, so these figures are retained from the original test notes; the screenshots above are new examples, not those original test captures. See [comparison notes](docs/comparison-notes.md).
 
 ## TV Dynamic
 
