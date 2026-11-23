@@ -9,7 +9,7 @@ My mpv shaders and playback setup for **native 1080p anime** on integrated graph
 | **[Salow](shaders/salow.hook)** | Restores line art with a four-layer network and a temporal step to reduce still-edge shimmer. |
 | **[Salow Medium](shaders/salow-medium.hook)** | A smaller three-layer alternative. |
 | **[TV Dynamic](shaders/tv-dynamic.glsl)** | Adds contrast, vibrance and cooler whites. Part of my default look. |
-| **Pan smoothing** | Optional camera-pan interpolation in the mpv configuration. **Alt+2**, off by default. |
+| **Pan smoothing** | Optional camera-pan interpolation in the mpv configuration. **Alt+2**, initially off; remembers your choice. |
 
 ## Install
 
@@ -36,7 +36,7 @@ Use `salow-medium.hook` for Medium, or remove the TV Dynamic path for the natura
 git clone https://github.com/Titik-03/salow.git && cd salow && ./install-config.sh
 ```
 
-If already cloned, run the chosen installer from that folder. The full installer accepts a missing or empty mpv folder; back up and rename a nonempty folder first. It includes preferences for Intel/VA-API, PipeWire and a 60 Hz display, so adjust them for your system. [Controls, dependencies and audio setup](mpv-config/README.md).
+If already cloned, run the chosen installer from that folder. The full installer automatically moves your old configuration into a dated backup beside the mpv folder, then installs the new setup. It preserves supplied audio impulse responses and saved toggle choices. It includes preferences for Intel/VA-API, PipeWire and a 60 Hz display, so adjust them for your system. [Controls, dependencies and audio setup](mpv-config/README.md).
 
 Prefer manual installation? Download the shader files from [Releases](https://github.com/Titik-03/salow/releases), place them in your mpv `shaders/` folder and use the settings above.
 
@@ -68,7 +68,7 @@ Historical results on an Intel Core Ultra 5 125U, power-saver, gpu-next/Vulkan, 
 
 **TV Dynamic** is a separate picture-look shader that runs after Salow. Adjust its contrast, vibrance and white-point settings to taste; it changes colour by design. [Tuning and technical details](docs/technical-details.md#tuning-tv-dynamic).
 
-**Pan smoothing** requires mpv with VapourSynth support, VapourSynth MVTools and NumPy. Detected pans are interpolated: 23.976/24 fps becomes 59.94/60 fps; 25 fps becomes 62.5 fps. It increases processing work and may introduce motion artifacts. It stays **off until Alt+2** in the bundled setup.
+**Pan smoothing** requires mpv with VapourSynth support, VapourSynth MVTools and NumPy. Detected pans are interpolated: 23.976/24 fps becomes 59.94/60 fps; 25 fps becomes 62.5 fps. It increases processing work and may introduce motion artifacts. It starts off and remembers your **Alt+2** choice across restarts. Alt+1 remembers frame mixing; Alt+3 remembers Original / Atmos / X-Fi audio (initially X-Fi).
 
 ## Credits
 

@@ -32,7 +32,7 @@ TV Dynamic is the picture look I pair with Salow. Its single pass applies an S-c
 
 Pan smoothing is part of the optional [mpv configuration](../mpv-config/), not a shader. It estimates motion at reduced resolution and uses VapourSynth MVTools interpolation when the motion resembles a camera pan. Other scenes use a frame-mixing path. For approximately 23.976 or 24 fps sources it outputs approximately 59.94 or 60 fps; 25 fps becomes 62.5 fps. Other source frame rates pass through without this processing.
 
-It is **off by default** and toggled with **Alt+2** in the configuration package. It requires an mpv build with VapourSynth, VapourSynth MVTools and NumPy. It can increase CPU and GPU work, and motion estimation can produce artifacts. Its compatibility and performance depend on the installed versions, hardware and video; no universal smoothness or timing claim is implied.
+It is **initially off**, remembers its last state, and is toggled with **Alt+2** in the configuration package. It requires an mpv build with VapourSynth, VapourSynth MVTools and NumPy. It can increase CPU and GPU work, and motion estimation can produce artifacts. Its compatibility and performance depend on the installed versions, hardware and video; no universal smoothness or timing claim is implied.
 
 
 ### Tuning TV Dynamic

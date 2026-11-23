@@ -1,0 +1,56 @@
+-- Run from the repository: lua tests/test_controls.lua
+local scratch = os.tmpname()
+os.remove(scratch)
+local messages, events, props, commands
+package.preload['mp.utils'] = function()
+    return {
+        file_info = function() return {} end,
+        format_json = function(s) return ('%s %s %s'):format(tostring(s.mix), tostring(s.pan), s.audio) end,
+        parse_json = function(s)
+            local mix, pan, audio = s:match('(%w+) (%w+) (%w+)')
+            return {mix=mix=='true', pan=pan=='true', audio=audio}
+        end,
+    }
+end
+local function start()
+    messages, events, props, commands = {}, {}, {}, {}
+    mp = {
+        command_native = function(a) return a[2]=='~~/salow-state.json' and scratch or a[2] end,
+        register_script_message = function(n,f) messages[n]=f end,
+        register_event = function(n,f) events[n]=f end,
+        set_property_native = function(n,v) props[n]=v end,
+        set_property_number = function(n,v) props[n]=v end,
+        command = function(c) commands[#commands+1]=c end,
+        commandv = function(...) commands[#commands+1]=table.concat({...},' ') end,
+        osd_message = function() end,
+        msg = {error=function(e) error(e) end},
+    }
+    dofile('mpv-config/scripts/salow-controls.lua')
+    events['file-loaded']()
+end
+start()
+assert(not props.interpolation)
+assert(commands[#commands]:find('xfi%-crystalizer'))
+messages['salow-model']('medium')
+assert(props['glsl-shaders'][1]:find('medium'))
+messages['salow-look']()
+assert(#props['glsl-shaders']==1)
+messages['salow-model']('off')
+assert(#props['glsl-shaders']==0)
+messages['salow-mix']()
+messages['pan-smooth-toggle']()
+messages['salow-audio']() -- X-Fi -> Original
+start()
+assert(props.interpolation)
+assert(commands[1]=='apply-profile pan-smooth')
+assert(commands[#commands]=='no-osd af remove @fx')
+assert(props['glsl-shaders'][1]:find('salow.hook'))
+messages['salow-mix']()
+messages['pan-smooth-toggle']()
+messages['salow-audio']() -- Original -> Atmos
+start()
+assert(not props.interpolation)
+assert(commands[1]~='apply-profile pan-smooth')
+assert(commands[#commands]:find('dolby%-atmos'))
+os.remove(scratch)
+print('Controls and persistence checks passed')

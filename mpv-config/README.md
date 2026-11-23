@@ -6,18 +6,20 @@ This is my personal mpv setup. See the main README for installation, dependencie
 
 | Key | Action |
 |---|---|
-| Ctrl+1 | Salow + TV Dynamic |
-| Ctrl+2 | Anime4K A+A + TV Dynamic |
+| Ctrl+1 | Salow (startup model; preserves selected look) |
+| Ctrl+2 | Salow Medium (preserves selected look) |
 | Ctrl+0 | Shaders off |
-| Ctrl+3 / Ctrl+5 | Natural look / TV Dynamic |
-| Alt+1 | Toggle frame mixing |
-| Alt+2 | Toggle pan smoothing (off at startup) |
-| Alt+A | Cycle available audio effects |
+| Ctrl+3 | Toggle natural / TV Dynamic |
+| Alt+1 | Toggle frame mixing (remembered, initially off) |
+| Alt+2 | Toggle pan smoothing (remembered, initially off) |
+| Alt+3 | Original / Atmos / X-Fi (remembered, initially X-Fi) |
 | Tab / Shift+Tab | Skip forward / back 85 seconds |
 
 ## Audio and optional components
 
-Audio starts native unless you supply `irs/xfi-crystalizer.wav`, which selects X-Fi at startup. The optional `irs/dolby-atmos.wav` and `irs/razor-surround.wav` enable those modes. Impulse responses are not bundled because their redistribution terms are unestablished. The current audio script does not escape special characters in the impulse-response path; use a configuration path without quotes, commas, colons or brackets.
+Shader selection starts with Salow + TV Dynamic each launch. Ctrl+0 disables both shaders; Ctrl+3 changes the look without enabling a disabled shader. Motion and audio choices are saved in `salow-state.json` inside the mpv configuration folder, including the off/original choice.
+
+Supply `irs/xfi-crystalizer.wav` and `irs/dolby-atmos.wav` for the X-Fi and Atmos modes. A missing impulse response falls back to original sound. Impulse responses are not bundled because their redistribution terms are unestablished. The installer retains your supplied responses and saved choices, and backs up the entire previous configuration before replacement.
 
 Pan smoothing needs an mpv build with VapourSynth, plus MVTools and NumPy; leave it off if these are unavailable. The uosc helper binaries are omitted, so clipboard and subtitle-download features are unavailable.
 

@@ -22,17 +22,26 @@ with tempfile.TemporaryDirectory() as scratch:
             target.mkdir()
             config.symlink_to(target, target_is_directory=True)
         result = subprocess.run(['sh', str(installer)], env={**os.environ, 'XDG_CONFIG_HOME': str(base)}, capture_output=True, text=True)
-        if case in ('missing', 'empty'):
-            assert result.returncode == 0, result.stderr
-            assert (config / 'mpv.conf').is_file()
-            assert (config / 'shaders/salow.hook').is_file()
-            assert not (config / 'mpv-config').exists()
-        else:
-            assert result.returncode != 0, case
-            if case in ('settings', 'hidden'):
-                assert marker.read_text() == 'keep me'
-            elif case == 'file':
-                assert config.read_text() == 'keep me'
-            else:
-                assert config.is_symlink() and not list(target.iterdir())
+        assert result.returncode == 0, result.stderr
+        assert (config / 'mpv.conf').is_file()
+        assert (config / 'shaders/salow.hook').is_file()
+        assert not (config / 'mpv-config').exists()
+        backups = list(base.glob('mpv.backup-*/mpv'))
+        assert len(backups) == (0 if case == 'missing' else 1)
+        if case in ('settings', 'hidden'):
+            assert (backups[0] / marker.name).read_text() == 'keep me'
+        elif case == 'file':
+            assert backups[0].read_text() == 'keep me'
+        elif case == 'symlink':
+            assert backups[0].is_symlink() and not list(target.iterdir())
         print(case + ': passed')
+    base = Path(scratch) / 'upgrade'
+    config = base / 'mpv'
+    (config / 'irs').mkdir(parents=True)
+    (config / 'irs/xfi-crystalizer.wav').write_bytes(b'user supplied response')
+    (config / 'salow-state.json').write_text('{"audio":"original","pan":true}')
+    result = subprocess.run(['sh', str(installer)], env={**os.environ, 'XDG_CONFIG_HOME': str(base)}, capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr
+    assert (config / 'irs/xfi-crystalizer.wav').read_bytes() == b'user supplied response'
+    assert (config / 'salow-state.json').read_text() == '{"audio":"original","pan":true}'
+    print('Upgrade preserves audio files and choices: passed')
