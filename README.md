@@ -1,19 +1,14 @@
 # Salow
 
-**Salow** is an [mpv](https://mpv.io) shader that restores anime line art on **native 1080p** video
-(1920×1080 source on a 1080p screen). It reproduces the look of **Anime4K mode A+A** (clean, crisp, anti-aliased
-line art from blurry web and TV encodes) at about **a third of the GPU time**, so it runs smoothly on laptop
-integrated graphics where A+A drops frames.
+![The Salow playback chain: optional pan smoothing, Salow line restoration, and TV Dynamic picture look](docs/salow-overview.svg)
 
-It also does two things A+A can't:
+**Salow** is my mpv setup for anime: a line-restoration shader, the **TV Dynamic** picture look, and optional **pan smoothing**. It is designed around native 1080p playback on laptop integrated graphics.
 
-- **Steady lines.** Salow remembers the previous frame. Where the picture hasn't really changed, it evens out
-  the frame-to-frame flicker that sharpening adds to compression noise on line edges. On our test clips, shimmer
-  on still line edges went below both plain Salow and A+A. The gate is designed to leave moving areas alone; motion artifacts can still occur.
-- **Thin lines in dark scenes.** Thin dark lines in dim areas get the same depth A+A gives them, without going
-  darker than A+A.
+- **Salow** restores lines with a small convolutional network and includes a temporal step intended to reduce shimmer on still edges. Salow Medium offers a smaller network.
+- **TV Dynamic** gives the picture a TV-inspired look, adding contrast and vibrance with a slightly cool white point. It runs after Salow and is part of my default setup.
+- **Pan smoothing** is an optional video filter in my mpv configuration. It looks for camera pans and uses motion interpolation on detected pans. It starts off; **Alt+2** turns it on or off.
 
-The goal is accurate, even, anti-aliased lines while preserving line weight and colour and avoiding halos. Results depend on the source.
+The aim is clean, even lines while preserving detail and colour. Results, cost and artifacts depend on the video and hardware.
 
 ## The shaders
 
@@ -24,13 +19,19 @@ The goal is accurate, even, anti-aliased lines while preserving line weight and 
 | `shaders/tv-dynamic.glsl` | **TV Dynamic**: optional picture mode like a TV's "Dynamic" preset (gentle S-curve, vibrance, slightly cool white), with bounded colour adjustments. Runs after Salow. | very small (one pass, per pixel) |
 | Anime4K A+A (for comparison) | Clamp_Highlights + Restore_CNN_M + Restore_CNN_S | ~23 ms |
 
-\* Shader time per 1080p frame on an **Intel Core Ultra 5 125U** (integrated Arc graphics) in **power-saver mode**,
+\* Shader time per 1080p frame on an **Intel Core Ultra 5 125U** (Intel integrated graphics) in **power-saver mode**,
 measured offscreen with libplacebo/Vulkan. Your numbers will differ by GPU and power mode. In real mpv playback
 on the same laptop, the total GPU time per frame (including mpv's own work and TV Dynamic) was 9.3 ms with Salow
 against 23 ms with A+A, with no dropped frames. Salow Medium has not been timed in live mpv yet; its figure comes
 from the offscreen runs.
 
-### How close to Anime4K A+A?
+## Comparisons
+
+![Live mpv GPU time for no shader, Salow with TV Dynamic, and Anime4K A+A with TV Dynamic](docs/gpu-comparison.svg)
+
+These are **total mpv GPU times**, including mpv's own rendering. The test used two 20-second runs after a 5-second warm-up on an Intel Core Ultra 5 125U in power-saver mode, with gpu-next/Vulkan, interpolation, and 1080p input and output. Salow and A+A used TV Dynamic; the no-shader run did not. All runs recorded zero dropped frames. The bars show the mean of the two runs; the labels show each measurement. This is one clip on one machine, not a performance guarantee. Pan smoothing was not part of this comparison.
+
+### Line detail and similarity to Anime4K A+A
 
 Measured on 4 held-out clips (bright, dark, close-up face, busy detail), 12 frames each. Lower is closer to A+A.
 
@@ -40,7 +41,27 @@ Measured on 4 held-out clips (bright, dark, close-up face, busy detail), 12 fram
 | Mean difference on edges, face / bright clip | 4.1 / 4.0 | 5.7 / 5.9 |
 | Thin-line depth (A+A: 14.8 face, 12.6 bright) | 16.6 / 13.7 | 15.9 / 12.7 |
 
-Both keep A+A's line weight; Medium gives up some fine-edge precision for its speed. Choose the version that works best on your system.
+In these samples, Medium is less close to A+A on fine edges. Line depth is not an error score: the target varies by clip, and a higher number means a darker line, not necessarily a better result. Choose the version that works best on your system.
+
+A separate offscreen test measured line shimmer and thin-line depth in five held-out 48-frame clips on the same Intel GPU. The current Salow was called **Salow Steady** in those notes; the earlier Salow is the version without its thin-line and temporal steps:
+
+| Measurement | Anime4K A+A | Earlier Salow | Current Salow |
+|---|---:|---:|---:|
+| Still clip: edge shimmer (code values; lower is less frame-to-frame change) | 0.468 | 0.533 | 0.350 |
+| Dark clip: edge shimmer (code values; lower is less) | 0.603 | 0.607 | 0.463 |
+| Dark clip: thin-line depth (code values; higher is darker) | 10.58 | 7.31 | 9.83 |
+
+These differences were measured on selected areas and clips. The shimmer changes are small, and visibility was not established. The underlying captures and runner were removed during project cleanup, so these figures are retained from the original test notes; no before-and-after images are presented here. See [comparison notes](docs/comparison-notes.md).
+
+## TV Dynamic
+
+TV Dynamic is the picture look I pair with Salow. Its single pass applies an S-curve to brightness, gives less-saturated colours a stronger vibrance boost, and adds a slightly cool white point. It can also be used without Salow. The shader limits colour gain and clamps its output, but the look changes colour and contrast by design; it is not a calibrated display profile. The visual effect and cost have not been separately measured in the timing comparison above.
+
+## Pan smoothing
+
+Pan smoothing is part of the optional [mpv configuration](mpv-config/), not a shader. It estimates motion at reduced resolution and uses VapourSynth MVTools interpolation when the motion resembles a camera pan. Other scenes use a frame-mixing path. For approximately 23.976 or 24 fps sources it outputs approximately 59.94 or 60 fps; 25 fps becomes 62.5 fps. Other source frame rates pass through without this processing.
+
+It is **off by default** and toggled with **Alt+2** in the configuration package. It requires an mpv build with VapourSynth, VapourSynth MVTools and NumPy. It can increase CPU and GPU work, and motion estimation can produce artifacts. Its compatibility and performance depend on the installed versions, hardware and video; no universal smoothness or timing claim is implied.
 
 ## Requirements
 
@@ -124,8 +145,7 @@ A+A as the teacher. The last layer is made 10% stronger for slightly crisper lin
 
 After the network, the last pass also:
 
-1. **Thin-line depth:** finds thin dark ridges with a local maximum below about 150/255 and deepens them up to A+A's
-   depth for that brightness band, never past it.
+1. **Thin-line depth:** finds thin dark ridges with a local maximum below about 150/255 and adds a bounded darkening correction. In one tested clip the result exceeded A+A's measured depth.
 2. **Steady:** keeps the previous frame's correction in a storage texture. Where both the source pixel and the
    correction changed by less than about 1–3 code values, it averages the two (60% weight at most). The gate is intended to leave moving areas alone.
 

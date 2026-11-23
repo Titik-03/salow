@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="310" viewBox="0 0 1200 310" role="img" aria-labelledby="title desc">
+<title id="title">Salow playback chain</title><desc id="desc">Pan smoothing optionally processes the video, Salow restores lines, and TV Dynamic adjusts the picture.</desc>
+<rect width="1200" height="310" rx="24" fill="#101321"/>
+<text x="48" y="57" fill="#f5f5fa" font-family="sans-serif" font-size="30" font-weight="700">THE SALOW PLAYBACK CHAIN</text>
+<text x="48" y="86" fill="#a7afc6" font-family="sans-serif" font-size="16">Three parts, each with a different job</text>
+<rect x="45" y="118" width="334" height="145" rx="16" fill="#202840" stroke="#485979"/>
+<text x="67" y="154" fill="#99bfff" font-family="sans-serif" font-size="13" font-weight="700">OPTIONAL  /  BEFORE THE SHADERS</text>
+<text x="67" y="190" fill="#fff" font-family="sans-serif" font-size="24" font-weight="700">Pan smoothing</text>
+<text x="67" y="222" fill="#c3cadb" font-family="sans-serif" font-size="16">Smoother detected camera pans</text>
+<text x="67" y="245" fill="#9aa8c1" font-family="sans-serif" font-size="14">Alt+2 · off by default</text>
+<path d="M388 191h23m-8-7 8 7-8 7" fill="none" stroke="#8490a9" stroke-width="2"/>
+<rect x="421" y="118" width="334" height="145" rx="16" fill="#243349" stroke="#66a7be"/>
+<text x="443" y="154" fill="#82d3e9" font-family="sans-serif" font-size="13" font-weight="700">LINE RESTORATION</text>
+<text x="443" y="190" fill="#fff" font-family="sans-serif" font-size="24" font-weight="700">Salow</text>
+<text x="443" y="222" fill="#c3cadb" font-family="sans-serif" font-size="16">Clearer, steadier line art</text>
+<text x="443" y="245" fill="#9aa8c1" font-family="sans-serif" font-size="14">Full or Medium</text>
+<path d="M764 191h23m-8-7 8 7-8 7" fill="none" stroke="#8490a9" stroke-width="2"/>
+<rect x="797" y="118" width="358" height="145" rx="16" fill="#392a40" stroke="#b277a5"/>
+<text x="819" y="154" fill="#e2a4d1" font-family="sans-serif" font-size="13" font-weight="700">PICTURE LOOK</text>
+<text x="819" y="190" fill="#fff" font-family="sans-serif" font-size="24" font-weight="700">TV Dynamic</text>
+<text x="819" y="222" fill="#c3cadb" font-family="sans-serif" font-size="16">Contrast, colour and cooler whites</text>
+<text x="819" y="245" fill="#c8a7c1" font-family="sans-serif" font-size="14">Included in my default setup</text>
+</svg>
